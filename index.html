@@ -1,0 +1,73 @@
+<html>
+  <head>
+    <script type='text/javascript' src='https://code.jquery.com/jquery-2.1.4.min.js'></script>
+    <script type='text/javascript' src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
+    <link type='text/css' rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'></link>
+    <link type='text/css' rel='stylesheet' href='bootstrap.icon-large.css'></link>
+  </head>
+  <body>
+    <div class='row'>
+      <div class='col-md-4 col-md-offset-4 form-group' style='margin-top: 120px'>
+        <input id='user-input' class='form-control' placeholder='Calender event' type='text' />
+        <div id='event' style='margin-top: 16px; height: 200px; background-color: #C8FFBE; padding: 8px;'> 
+          <h3 id='event-title'>Event Title</h3>
+          <div>
+            <i class="icon-large icon-calendar"></i>
+            &nbsp
+            <span id='event-date'></span>
+          </div>
+          <div>
+            <i class="icon-large icon-clock"></i>
+            &nbsp
+            <span id='event-time'></span>
+          </div>
+          <div>
+            <i class="icon-large icon-user"></i>
+            &nbsp
+            <span id='event-people'></span>
+          </div>
+          <div>
+            <span id='event-places'></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      $('#event').hide();  
+
+      function send_message(message) {
+        $.ajax({
+          type: 'POST',
+          url: 'cal.py',
+          data: message,
+          dataType: 'text',
+          success: function(response){
+            console.log(response);
+            update_event(JSON.parse(response));
+          }
+        });
+      }
+
+      $('#user-input').keyup(function() {
+        val = $('#user-input').val();
+        send_message({message: val});
+      });
+
+      function update_event(data) {
+        $('#event').show();
+
+        $('#event-title').html(data['action']);
+        $('#event-date').html(data['date']);
+        $('#event-time').html(data['time']);
+        
+        if (data['places'] !== 'undefined') {
+          $('#event-places').html(data['places']);
+        }
+        
+        if (data['people'] !== 'undefined') {
+          $('#event-people').html(data['people']);
+        }
+      }
+    </script>
+  </body>
+</html>
